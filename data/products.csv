@@ -1,0 +1,101 @@
+product_id,title,vendor,price,compare_at_price,tags,sizes_available,stock_per_size,is_sale,is_clearance,bestseller_score
+P0001,Classic A-Line Day Dress,Velvet Rose,137,180,"casual, day, fitted, sleeve","2,4,6,8,10,12","{""2"": 3, ""4"": 5, ""6"": 8, ""8"": 6, ""10"": 4, ""12"": 2}",True,False,72
+P0002,Silk Wrap Evening Gown,Nocturne,420,420,"evening, formal, elegant, wrap","4,6,8,10,12,14","{"" 4"": 2, ""6"": 4, ""8"": 3, ""10"": 5, ""12"": 1, ""14"": 0}",False,False,91
+P0003,Modest Lace Maxi Dress,Aurelia Couture,258,310,"modest, evening, lace, long-sleeve, maxi","2,4,6,8,10,12,14","{ ""2"": 1, ""4"": 3, ""6"": 5, ""8"": 7, ""10"": 4, ""12"": 2, ""14"": 1}",True,False,88
+P0004,Floral Print Sundress,Blossom & Bloom,95,95,"casual, day, floral, sleeveless","4,6,8,10,12","{ ""4"": 10, ""6"": 8, ""8"": 12, ""10"": 6, ""12"": 3}",False,False,65
+P0005,Tailored Blazer Dress,Metropolitan,215,215,"work, professional, sleeve, tailored, fitted","2,4,6,8,10,12,14","{ ""2"": 2, ""4"": 4, ""6"": 6, ""8"": 5, ""10"": 3, ""12"": 2, ""14"": 1}",False,False,78
+P0006,Sequin Cocktail Dress,Nocturne,340,340,"evening, cocktail, sequin, fitted, sleeveless","4,6,8,10,12","{ ""4"": 1, ""6"": 3, ""8"": 2, ""10"": 4, ""12"": 0}",False,False,85
+P0007,Cotton Shirt Dress,Everyday Luxe,89,120,"casual, day, cotton, sleeve, relaxed","4,6,8,10,12,14,16","{ ""4"": 8, ""6"": 10, ""8"": 15, ""10"": 12, ""12"": 7, ""14"": 5, ""16"": 3}",True,False,60
+P0008,Velvet Ballgown,Aurelia Couture,309,450,"evening, formal, ballgown, modest, long-sleeve","4,6,8,10,12,14,16","{ ""4"": 1, ""6"": 2, ""8"": 3, ""10"": 2, ""12"": 1, ""14"": 1, ""16"": 0}",True,False,92
+P0009,Linen Shift Dress,Blossom & Bloom,78,78,"casual, day, linen, sleeveless, relaxed","6,8,10,12,14","{ ""6"": 6, ""8"": 9, ""10"": 7, ""12"": 4, ""14"": 2}",False,False,55
+P0010,Crepe Midi Dress,Metropolitan,185,185,"work, professional, midi, sleeve, crepe","2,4,6,8,10,12","{ ""2"": 3, ""4"": 5, ""6"": 7, ""8"": 4, ""10"": 3, ""12"": 1}",False,False,74
+P0011,Beaded Gala Gown,Nocturne,475,475,"evening, formal, beaded, gala, sleeveless","4,6,8,10,12","{ ""4"": 0, ""6"": 1, ""8"": 2, ""10"": 1, ""12"": 0}",False,False,95
+P0012,Denim Wrap Dress,Everyday Luxe,76,110,"casual, day, denim, wrap, sleeve","2,4,6,8,10,12,14","{ ""2"": 3, ""4"": 5, ""6"": 8, ""8"": 10, ""10"": 6, ""12"": 4, ""14"": 2}",True,False,58
+P0013,Chiffon Modest Gown,Aurelia Couture,284,350,"modest, evening, chiffon, long-sleeve, flowing","4,6,8,10,12,14,16","{ ""4"": 2, ""6"": 3, ""8"": 4, ""10"": 3, ""12"": 2, ""14"": 1, ""16"": 1}",True,False,86
+P0014,Structured Peplum Dress,Metropolitan,414,414,"work, professional, peplum, fitted, sleeve","2,4,6,8,10,12","{ ""2"": 1, ""4"": 3, ""6"": 4, ""8"": 2, ""10"": 3, ""12"": 1}",False,False,70
+P0015,Embroidered Tulle Gown,Nocturne,298,380,"evening, formal, embroidered, tulle, modest","6,8,10,12,14","{ ""6"": 2, ""8"": 3, ""10"": 4, ""12"": 2, ""14"": 1}",True,False,90
+P0016,Jersey Knit Day Dress,Everyday Luxe,65,65,"casual, day, jersey, relaxed, sleeve","6,8,10,12,14,16","{ ""6"": 12, ""8"": 15, ""10"": 10, ""12"": 8, ""14"": 5, ""16"": 3}",False,False,50
+P0017,Ponte Work Dress,Metropolitan,109,145,"work, professional, ponte, fitted, sleeve","4,6,8,10,12,14,16","{ ""4"": 4, ""6"": 6, ""8"": 8, ""10"": 5, ""12"": 3, ""14"": 2, ""16"": 1}",True,False,68
+P0018,Silk Charmeuse Gown,Aurelia Couture,376,376,"evening, formal, silk, elegant, sleeveless","4,6,8,10,12,14,16","{ ""4"": 1, ""6"": 2, ""8"": 1, ""10"": 2, ""12"": 1, ""14"": 0, ""16"": 1}",False,False,89
+P0019,Printed Maxi Dress,Blossom & Bloom,131,175,"casual, day, printed, maxi, sleeveless","6,8,10,12,14,16","{ ""6"": 7, ""8"": 9, ""10"": 5, ""12"": 4, ""14"": 3, ""16"": 2}",True,False,62
+P0020,One-Shoulder Gala Dress,Nocturne,419,419,"evening, formal, one-shoulder, fitted, gala","4,6,8,10,12,14,16","{ ""4"": 0, ""6"": 1, ""8"": 2, ""10"": 1, ""12"": 1, ""14"": 0, ""16"": 1}",False,False,93
+P0021,Modest Crepe Evening Dress,Aurelia Couture,277,330,"modest, evening, crepe, long-sleeve, midi","4,6,8,10,12","{ ""4"": 3, ""6"": 4, ""8"": 5, ""10"": 3, ""12"": 2}",True,False,84
+P0022,Jacquard Cocktail Dress,Nocturne,437,437,"evening, cocktail, jacquard, fitted, sleeve","6,8,10,12,14,16","{ ""6"": 1, ""8"": 2, ""10"": 3, ""12"": 1, ""14"": 0, ""16"": 1}",False,False,87
+P0023,Wool Blend Sheath Dress,Metropolitan,259,259,"work, professional, wool, sheath, sleeve","4,6,8,10,12","{ ""4"": 2, ""6"": 4, ""8"": 3, ""10"": 2, ""12"": 1}",False,False,73
+P0024,Embellished A-Line Gown,Velvet Rose,275,340,"evening, formal, embellished, a-line, modest","4,6,8,10,12,14,16","{ ""4"": 2, ""6"": 3, ""8"": 4, ""10"": 3, ""12"": 2, ""14"": 1, ""16"": 1}",True,False,82
+P0025,Ruffle Hem Midi Dress,Blossom & Bloom,266,266,"casual, day, ruffle, midi, sleeveless","6,8,10,12,14","{ ""6"": 5, ""8"": 7, ""10"": 4, ""12"": 3, ""14"": 1}",False,False,64
+P0026,Duchess Satin Ballgown,Aurelia Couture,390,390,"evening, formal, satin, ballgown, sleeveless","6,8,10,12,14","{ ""6"": 1, ""8"": 1, ""10"": 2, ""12"": 1, ""14"": 1}",False,False,94
+P0027,Tie-Waist Casual Dress,Everyday Luxe,72,72,"casual, day, tie-waist, relaxed, sleeve","6,8,10,12,14,16","{ ""6"": 10, ""8"": 12, ""10"": 8, ""12"": 6, ""14"": 4, ""16"": 2}",False,False,52
+P0028,Tweed Office Dress,Metropolitan,153,200,"work, professional, tweed, fitted, sleeve","4,6,8,10,12","{ ""4"": 3, ""6"": 5, ""8"": 4, ""10"": 3, ""12"": 2}",True,False,71
+P0029,Crystal Embellished Gown,Nocturne,305,305,"evening, formal, crystal, fitted, sleeveless","2,4,6,8,10,12","{ ""2"": 1, ""4"": 0, ""6"": 1, ""8"": 1, ""10"": 2, ""12"": 0}",False,False,88
+P0030,Modest Pleated Maxi,Velvet Rose,232,290,"modest, evening, pleated, maxi, long-sleeve","2,4,6,8,10,12","{ ""2"": 2, ""4"": 4, ""6"": 5, ""8"": 6, ""10"": 3, ""12"": 2}",True,False,79
+P0031,Draped Jersey Gown,Nocturne,311,311,"evening, formal, draped, jersey, sleeve","4,6,8,10,12","{ ""4"": 2, ""6"": 3, ""8"": 4, ""10"": 2, ""12"": 1}",False,False,83
+P0032,Pinstripe Shift Dress,Metropolitan,305,305,"work, professional, pinstripe, shift, sleeve","6,8,10,12,14","{ ""6"": 3, ""8"": 4, ""10"": 5, ""12"": 2, ""14"": 1}",False,False,69
+P0033,Tulle Overlay Gown,Velvet Rose,266,330,"evening, formal, tulle, overlay, modest","6,8,10,12,14,16","{ ""6"": 2, ""8"": 3, ""10"": 4, ""12"": 2, ""14"": 1, ""16"": 1}",True,False,81
+P0034,Button-Front Shirt Dress,Everyday Luxe,239,239,"casual, day, button-front, cotton, sleeve","6,8,10,12,14","{ ""6"": 6, ""8"": 8, ""10"": 5, ""12"": 4, ""14"": 2}",False,False,57
+P0035,Clearance Print Sundress,Blossom & Bloom,78,160,"casual, day, clearance, printed, sleeveless","4,6,8,10,12,14,16","{ ""4"": 2, ""6"": 3, ""8"": 1, ""10"": 2, ""12"": 1, ""14"": 0, ""16"": 1}",False,True,40
+P0036,Tiered Ruffle Gown,Aurelia Couture,355,355,"evening, formal, tiered, ruffle, sleeveless","6,8,10,12","{ ""6"": 1, ""8"": 2, ""10"": 1, ""12"": 1}",False,False,86
+P0037,Ribbed Knit Midi,Everyday Luxe,88,88,"casual, day, knit, midi, fitted, sleeve","6,8,10,12,14","{ ""6"": 8, ""8"": 10, ""10"": 7, ""12"": 5, ""14"": 3}",False,False,54
+P0038,Houndstooth Pencil Dress,Metropolitan,144,190,"work, professional, houndstooth, pencil, fitted, sleeve","4,6,8,10,12","{ ""4"": 3, ""6"": 5, ""8"": 4, ""10"": 3, ""12"": 2}",True,False,67
+P0039,Organza Ball Gown,Nocturne,430,430,"evening, formal, organza, ballgown, sleeveless","6,8,10,12","{ ""6"": 1, ""8"": 1, ""10"": 1, ""12"": 0}",False,False,96
+P0040,Modest Wrap Midi,Velvet Rose,204,260,"modest, day, wrap, midi, long-sleeve","6,8,10,12,14,16","{ ""6"": 4, ""8"": 6, ""10"": 5, ""12"": 3, ""14"": 2, ""16"": 1}",True,False,76
+P0041,Clearance Lace Shift,Blossom & Bloom,122,250,"casual, day, clearance, lace, sleeveless","6,8,10,12","{ ""6"": 1, ""8"": 0, ""10"": 2, ""12"": 1}",False,True,35
+P0042,Scuba Fit-Flare Dress,Everyday Luxe,115,115,"casual, day, scuba, fit-flare, sleeveless","6,8,10,12,14","{ ""6"": 7, ""8"": 9, ""10"": 6, ""12"": 4, ""14"": 2}",False,False,59
+P0043,Poplin Work Shirt Dress,Metropolitan,219,280,"work, professional, poplin, shirt-dress, sleeve","4,6,8,10,12,14","{ ""4"": 3, ""6"": 5, ""8"": 7, ""10"": 4, ""12"": 3, ""14"": 1}",True,False,72
+P0044,Taffeta Modest Gown,Aurelia Couture,346,346,"modest, evening, taffeta, long-sleeve, formal","6,8,10,12,14","{ ""6"": 1, ""8"": 2, ""10"": 3, ""12"": 1, ""14"": 1}",False,False,87
+P0045,Smocked Floral Midi,Blossom & Bloom,183,183,"casual, day, smocked, floral, midi, sleeve","6,8,10,12,14","{ ""6"": 5, ""8"": 7, ""10"": 4, ""12"": 3, ""14"": 2}",False,False,63
+P0046,Cape Sleeve Evening Dress,Nocturne,365,365,"evening, formal, cape-sleeve, elegant, fitted","6,8,10,12","{ ""6"": 1, ""8"": 2, ""10"": 2, ""12"": 1}",False,False,90
+P0047,Stretch Ponte Sheath,Metropolitan,128,170,"work, professional, ponte, sheath, fitted, sleeve","6,8,10,12,14","{ ""6"": 5, ""8"": 7, ""10"": 5, ""12"": 3, ""14"": 2}",True,False,66
+P0048,Clearance Chiffon Blouse Dress,Everyday Luxe,82,190,"casual, day, clearance, chiffon, sleeve","6,8,10,12,14","{ ""6"": 2, ""8"": 1, ""10"": 1, ""12"": 0, ""14"": 1}",False,True,30
+P0049,Clearance Knit Wrap Dress,Blossom & Bloom,71,150,"casual, day, clearance, knit, wrap","4,6,8,10,12","{ ""4"": 1, ""6"": 2, ""8"": 0, ""10"": 1, ""12"": 1}",False,True,28
+P0050,Modest High-Neck Gown,Velvet Rose,289,350,"modest, evening, high-neck, long-sleeve, formal","6,8,10,12,14","{ ""6"": 2, ""8"": 3, ""10"": 4, ""12"": 2, ""14"": 1}",True,False,85
+P0051,Fluted Sleeve Cocktail Dress,Nocturne,295,295,"evening, cocktail, fluted-sleeve, fitted","6,8,10,12","{ ""6"": 2, ""8"": 3, ""10"": 2, ""12"": 1}",False,False,82
+P0052,Color-Block Shift Dress,Everyday Luxe,98,98,"casual, day, color-block, shift, sleeveless","6,8,10,12,14","{ ""6"": 6, ""8"": 8, ""10"": 5, ""12"": 3, ""14"": 2}",False,False,53
+P0053,Brocade Evening Gown,Aurelia Couture,343,343,"evening, formal, brocade, fitted, sleeve","6,8,10,12,14","{ ""6"": 1, ""8"": 2, ""10"": 2, ""12"": 1, ""14"": 1}",False,False,91
+P0054,Belted Trench Dress,Metropolitan,178,230,"work, professional, trench, belted, sleeve","2,4,6,8,10,12","{ ""2"": 2, ""4"": 3, ""6"": 5, ""8"": 4, ""10"": 3, ""12"": 2}",True,False,70
+P0055,Applique Tulle Gown,Nocturne,255,255,"evening, formal, applique, tulle, sleeveless","4,6,8,10,12","{ ""4"": 1, ""6"": 2, ""8"": 3, ""10"": 2, ""12"": 1}",False,False,84
+P0056,Chambray Casual Dress,Everyday Luxe,82,82,"casual, day, chambray, relaxed, sleeve","6,8,10,12,14,16","{ ""6"": 8, ""8"": 11, ""10"": 7, ""12"": 5, ""14"": 3, ""16"": 2}",False,False,51
+P0057,Pleated Work Dress,Metropolitan,155,200,"work, professional, pleated, midi, sleeve","6,8,10,12,14","{ ""6"": 4, ""8"": 6, ""10"": 4, ""12"": 3, ""14"": 1}",True,False,69
+P0058,Metallic Thread Gown,Nocturne,326,326,"evening, formal, metallic, fitted, sleeveless","6,8,10,12","{ ""6"": 1, ""8"": 2, ""10"": 1, ""12"": 1}",False,False,89
+P0059,Eyelet Lace Sundress,Blossom & Bloom,191,240,"casual, day, eyelet, lace, sleeveless","6,8,10,12","{ ""6"": 4, ""8"": 6, ""10"": 3, ""12"": 2}",True,False,61
+P0060,Modest Satin Evening Dress,Velvet Rose,268,320,"modest, evening, satin, long-sleeve, elegant","6,8,10,12,14","{ ""6"": 2, ""8"": 4, ""10"": 3, ""12"": 2, ""14"": 1}",True,False,83
+P0061,Asymmetric Hem Dress,Blossom & Bloom,151,200,"casual, day, asymmetric, modern, sleeveless","6,8,10,12,14","{ ""6"": 5, ""8"": 7, ""10"": 4, ""12"": 3, ""14"": 1}",True,False,58
+P0062,Crochet Trim Casual Dress,Everyday Luxe,172,172,"casual, day, crochet, trim, sleeve","4,6,8,10,12","{ ""4"": 4, ""6"": 6, ""8"": 5, ""10"": 3, ""12"": 2}",False,False,56
+P0063,Modest Flutter Sleeve Dress,Velvet Rose,173,220,"modest, day, flutter-sleeve, midi, flowing","6,8,10,12,14","{ ""6"": 3, ""8"": 5, ""10"": 4, ""12"": 2, ""14"": 1}",True,False,75
+P0064,Bias-Cut Slip Dress,Nocturne,205,205,"evening, cocktail, slip, bias-cut, sleeveless","4,6,8,10,12","{ ""4"": 2, ""6"": 4, ""8"": 3, ""10"": 2, ""12"": 1}",False,False,77
+P0065,Velvet Modest Maxi,Aurelia Couture,319,319,"modest, evening, velvet, maxi, long-sleeve","6,8,10,12,14","{ ""6"": 1, ""8"": 2, ""10"": 3, ""12"": 1, ""14"": 1}",False,False,88
+P0066,Leather Trim Sheath Dress,Metropolitan,277,277,"work, professional, leather-trim, sheath, fitted","2,4,6,8,10","{ ""2"": 1, ""4"": 3, ""6"": 4, ""8"": 2, ""10"": 1}",False,False,74
+P0067,Lace Overlay Evening Gown,Nocturne,289,289,"evening, formal, lace, overlay, sleeve","6,8,10,12","{ ""6"": 2, ""8"": 3, ""10"": 2, ""12"": 1}",False,False,86
+P0068,Printed Challis Dress,Blossom & Bloom,253,253,"casual, day, printed, challis, sleeve","6,8,10,12","{ ""6"": 4, ""8"": 6, ""10"": 3, ""12"": 2}",False,False,60
+P0069,Clearance Jersey Maxi,Everyday Luxe,75,160,"casual, day, clearance, jersey, maxi","8,10,12,14,16","{ ""8"": 2, ""10"": 1, ""12"": 1, ""14"": 0, ""16"": 1}",False,True,25
+P0070,Modest Georgette Gown,Aurelia Couture,330,330,"modest, evening, georgette, long-sleeve, formal","4,6,8,10,12","{ ""4"": 1, ""6"": 2, ""8"": 3, ""10"": 2, ""12"": 1}",False,False,90
+P0071,Utility Shirt Dress,Everyday Luxe,105,105,"casual, day, utility, shirt-dress, sleeve","6,8,10,12,14","{ ""6"": 7, ""8"": 9, ""10"": 6, ""12"": 4, ""14"": 2}",False,False,55
+P0072,Modest Burnout Velvet Dress,Velvet Rose,193,250,"modest, evening, burnout, velvet, long-sleeve","4,6,8,10,12,16","{ ""4"": 2, ""6"": 3, ""8"": 4, ""10"": 3, ""12"": 1, ""16"": 1}",True,False,80
+P0073,Baroque Print Gown,Nocturne,300,300,"evening, formal, baroque, print, sleeve","6,8,10,12,14","{ ""6"": 1, ""8"": 2, ""10"": 2, ""12"": 1, ""14"": 1}",False,False,85
+P0074,Sweater Knit Dress,Everyday Luxe,92,92,"casual, day, sweater, knit, sleeve, fitted","6,8,10,12,14","{ ""6"": 6, ""8"": 8, ""10"": 5, ""12"": 4, ""14"": 2}",False,False,56
+P0075,Structured Midi with Pockets,Metropolitan,364,364,"work, professional, structured, midi, sleeve, pockets","4,6,8,10,12,14,16","{ ""4"": 2, ""6"": 3, ""8"": 4, ""10"": 3, ""12"": 2, ""14"": 1, ""16"": 1}",False,False,76
+P0076,Modest Embroidered Shift,Velvet Rose,195,245,"modest, day, embroidered, shift, long-sleeve","6,8,10,12,14","{ ""6"": 3, ""8"": 5, ""10"": 4, ""12"": 2, ""14"": 1}",True,False,74
+P0077,Clearance Tropical Print,Blossom & Bloom,55,130,"casual, day, clearance, tropical, print","8,10,12,14","{ ""8"": 1, ""10"": 2, ""12"": 0, ""14"": 1}",False,True,20
+P0078,Clearance Basic Shift Dress,Everyday Luxe,95,200,"casual, day, clearance, basic, shift","6,8,10,12,14","{ ""6"": 2, ""8"": 1, ""10"": 1, ""12"": 0, ""14"": 1}",False,True,22
+P0079,Micro-Pleat Evening Dress,Nocturne,336,336,"evening, formal, micro-pleat, elegant, sleeve","6,8,10,12","{ ""6"": 1, ""8"": 2, ""10"": 2, ""12"": 1}",False,False,87
+P0080,Clearance Denim Shift,Blossom & Bloom,53,120,"casual, day, clearance, denim, sleeveless","6,8,10","{ ""6"": 1, ""8"": 0, ""10"": 1}",False,True,18
+P0081,Modest Puff-Sleeve Gown,Velvet Rose,291,355,"modest, evening, puff-sleeve, formal, elegant","6,8,10,12,14","{ ""6"": 2, ""8"": 3, ""10"": 4, ""12"": 2, ""14"": 1}",True,False,84
+P0082,Graphic Print Midi,Everyday Luxe,110,110,"casual, day, graphic, midi, sleeve","6,8,10,12,14","{ ""6"": 5, ""8"": 7, ""10"": 4, ""12"": 3, ""14"": 1}",False,False,53
+P0083,Double-Breasted Coat Dress,Metropolitan,205,260,"work, professional, coat-dress, double-breasted, sleeve","4,6,8,10,12","{ ""4"": 2, ""6"": 4, ""8"": 3, ""10"": 2, ""12"": 1}",True,False,71
+P0084,Modest Silk Charmeuse Midi,Aurelia Couture,298,298,"modest, evening, silk, charmeuse, long-sleeve, midi","6,8,10,12","{ ""6"": 1, ""8"": 2, ""10"": 2, ""12"": 1}",False,False,86
+P0085,Ponte Pencil Dress,Metropolitan,273,273,"work, professional, ponte, pencil, fitted, sleeve","6,8,10,12","{ ""6"": 3, ""8"": 5, ""10"": 4, ""12"": 2}",False,False,68
+P0086,Off-Shoulder Cocktail Dress,Nocturne,316,316,"evening, cocktail, off-shoulder, fitted","4,6,8,10,12,16","{ ""4"": 1, ""6"": 2, ""8"": 3, ""10"": 2, ""12"": 1, ""16"": 2}",False,False,83
+P0087,Striped Knit Day Dress,Everyday Luxe,225,225,"casual, day, striped, knit, sleeve, relaxed","6,8,10,12,14","{ ""6"": 5, ""8"": 7, ""10"": 4, ""12"": 3, ""14"": 2}",False,False,57
+P0088,Modest Organza Gown,Velvet Rose,279,340,"modest, evening, organza, long-sleeve, formal","6,8,10,12,14","{ ""6"": 1, ""8"": 3, ""10"": 2, ""12"": 1, ""14"": 1}",True,False,82
+P0089,Abstract Print Shift,Blossom & Bloom,135,135,"casual, day, abstract, print, sleeveless","6,8,10,12","{ ""6"": 4, ""8"": 6, ""10"": 3, ""12"": 2}",False,False,55
+P0090,Velvet Evening Midi,Nocturne,349,349,"evening, formal, velvet, midi, sleeve","6,8,10,12","{ ""6"": 1, ""8"": 2, ""10"": 2, ""12"": 1}",False,False,88
+P0091,Modest Cotton Tunic Dress,Velvet Rose,125,165,"modest, day, cotton, tunic, long-sleeve","6,8,10,12,14,16","{ ""6"": 5, ""8"": 7, ""10"": 6, ""12"": 4, ""14"": 2, ""16"": 1}",True,False,63
+P0092,Leather-Look Pencil Dress,Metropolitan,198,198,"work, professional, leather-look, pencil, fitted","4,6,8,10,12","{ ""4"": 2, ""6"": 3, ""8"": 4, ""10"": 2, ""12"": 1}",False,False,72
+P0093,Embellished Modest Gown,Velvet Rose,225,285,"modest, evening, embellished, long-sleeve, formal","2,4,6,8,10,12,14","{ ""2"": 1, ""4"": 2, ""6"": 3, ""8"": 4, ""10"": 3, ""12"": 1, ""14"": 1}",True,False,81
+P0094,Clearance Floral Wrap,Blossom & Bloom,74,165,"casual, day, clearance, floral, wrap","6,8,10","{ ""6"": 1, ""8"": 0, ""10"": 1}",False,True,15
+P0095,Modest Jacquard Dress,Aurelia Couture,265,265,"modest, evening, jacquard, long-sleeve, fitted","6,8,10,12","{ ""6"": 2, ""8"": 3, ""10"": 2, ""12"": 1}",False,False,85
+P0096,Glitter Knit Evening Gown,Nocturne,299,370,"evening, formal, glitter, knit, fitted, sleeve","4,6,8,10,12","{ ""4"": 1, ""6"": 2, ""8"": 3, ""10"": 2, ""12"": 1}",True,False,89
+P0097,Smocked Waist Day Dress,Everyday Luxe,182,235,"casual, day, smocked, sleeve, relaxed","4,6,8,10,12","{ ""4"": 4, ""6"": 6, ""8"": 5, ""10"": 3, ""12"": 2}",True,False,58
+P0098,Modest Tiered Maxi,Velvet Rose,245,300,"modest, day, tiered, maxi, long-sleeve","6,8,10,12,14","{ ""6"": 3, ""8"": 5, ""10"": 4, ""12"": 2, ""14"": 1}",True,False,77
+P0099,Pearl Accent Evening Dress,Nocturne,209,265,"evening, cocktail, pearl, accent, sleeve","6,8,10,12,14","{ ""6"": 2, ""8"": 3, ""10"": 2, ""12"": 1, ""14"": 1}",True,False,80
+P0100,Asymmetric Drape Gown,Aurelia Couture,385,385,"evening, formal, asymmetric, drape, sleeveless","6,8,10,12","{ ""6"": 0, ""8"": 1, ""10"": 1, ""12"": 1}",False,False,92
