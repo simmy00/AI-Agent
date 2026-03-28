@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw Dashboard — WhatsApp & Chat Monitor</title>
+    <meta name="description" content="Real-time monitoring dashboard for OpenClaw AI customer support across WhatsApp and chat channels">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: rgba(17, 24, 39, 0.7);
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-cyan: #06b6d4;
+            --accent-pink: #ec4899;
+            --gradient-green: linear-gradient(135deg, #10b981, #059669);
+            --gradient-blue: linear-gradient(135deg, #3b82f6, #2563eb);
+            --gradient-purple: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            --gradient-orange: linear-gradient(135deg, #f59e0b, #d97706);
+            --gradient-red: linear-gradient(135deg, #ef4444, #dc2626);
+            --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.08);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(16, 185, 129, 0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 14, 26, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-glass);
+            padding: 0 2rem;
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .logo-text span {
+            color: var(--accent-blue);
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            padding: 8px 18px;
+            border-radius: 10px;
+            border: 1px solid var(--border-glass);
+            background: var(--bg-glass);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+            color: var(--accent-blue);
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--accent-green);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        /* Main content */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .stat-card:nth-child(1)::before { background: var(--gradient-blue); }
+        .stat-card:nth-child(2)::before { background: var(--gradient-green); }
+        .stat-card:nth-child(3)::before { background: var(--gradient-purple); }
+        .stat-card:nth-child(4)::before { background: var(--gradient-orange); }
+        .stat-card:nth-child(5)::before { background: var(--gradient-red); }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1;
+        }
+
+        .stat-card:nth-child(1) .stat-value { color: var(--accent-blue); }
+        .stat-card:nth-child(2) .stat-value { color: var(--accent-green); }
+        .stat-card:nth-child(3) .stat-value { color: var(--accent-purple); }
+        .stat-card:nth-child(4) .stat-value { color: var(--accent-orange); }
+        .stat-card:nth-child(5) .stat-value { color: var(--accent-red); }
+
+        .stat-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Messages Panel */
+        .panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-body {
+            max-height: 600px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.1) transparent;
+        }
+
+        .panel-body::-webkit-scrollbar { width: 6px; }
+        .panel-body::-webkit-scrollbar-track { background: transparent; }
+        .panel-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+        /* Message items */
+        .message-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-glass);
+            transition: background 0.2s ease;
+            cursor: pointer;
+        }
+
+        .message-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .message-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .channel-badge {
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .channel-badge.whatsapp {
+            background: rgba(37, 211, 102, 0.15);
+            color: #25d366;
+            border: 1px solid rgba(37, 211, 102, 0.25);
+        }
+
+        .channel-badge.web_simulate {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-blue);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+        }
+
+        .inquiry-badge {
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .inquiry-badge.sizing {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-purple);
+        }
+
+        .inquiry-badge.order_status {
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--accent-cyan);
+        }
+
+        .inquiry-badge.return_request {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-orange);
+        }
+
+        .inquiry-badge.general {
+            background: rgba(100, 116, 139, 0.15);
+            color: var(--text-secondary);
+        }
+
+        .inquiry-badge.escalate {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+            animation: escalate-pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes escalate-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-left: auto;
+        }
+
+        .message-text {
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            margin-bottom: 0.35rem;
+            line-height: 1.4;
+        }
+
+        .message-response {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            padding-left: 12px;
+            border-left: 2px solid rgba(59, 130, 246, 0.3);
+            max-height: 60px;
+            overflow: hidden;
+        }
+
+        .response-time-tag {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 0.35rem;
+        }
+
+        /* Inquiry breakdown */
+        .breakdown-grid {
+            padding: 1.5rem;
+        }
+
+        .breakdown-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .breakdown-item:last-child { border-bottom: none; }
+
+        .breakdown-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .breakdown-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .breakdown-bar-bg {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            margin: 0 12px;
+            overflow: hidden;
+        }
+
+        .breakdown-bar {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.6s ease;
+        }
+
+        .breakdown-count {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 24px;
+            text-align: right;
+        }
+
+        /* Empty state */
+        .empty-state {
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.4;
+        }
+
+        .empty-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            max-width: 300px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* Actions bar */
+        .actions-bar {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-glass);
+            background: var(--bg-glass);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: var(--accent-red);
+        }
+
+        .action-btn.refresh:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+            color: var(--accent-blue);
+        }
+
+        /* Modal for message detail */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 2rem;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--border-glass);
+            background: var(--bg-glass);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--accent-red);
+        }
+
+        .modal-section {
+            margin-bottom: 1.25rem;
+        }
+
+        .modal-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-content {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-glass);
+            border-radius: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-inner { padding: 0 1rem; }
+            .main { padding: 1rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .stat-value { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo">
+                <div class="logo-icon">🐾</div>
+                <div class="logo-text">Open<span>Claw</span></div>
+            </div>
+            <nav class="header-nav">
+                <a href="/dashboard" class="nav-btn active">📊 Dashboard</a>
+                <a href="/simulate" class="nav-btn">💬 Simulate</a>
+            </nav>
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                AI Agent Online
+            </div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="main">
+        <!-- Stats -->
+        <section class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-label">Total Messages</div>
+                <div class="stat-value" id="statTotal">0</div>
+                <div class="stat-sub">All channels</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Avg Response Time</div>
+                <div class="stat-value" id="statAvgRT">0<span style="font-size:1rem;font-weight:400;opacity:0.6">ms</span></div>
+                <div class="stat-sub">AI processing time</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">WhatsApp Messages</div>
+                <div class="stat-value" id="statWhatsApp">0</div>
+                <div class="stat-sub">Via Twilio webhook</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Simulated Messages</div>
+                <div class="stat-value" id="statSimulated">0</div>
+                <div class="stat-sub">Web simulate UI</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Escalations</div>
+                <div class="stat-value" id="statEscalations">0</div>
+                <div class="stat-sub">Routed to human</div>
+            </div>
+        </section>
+
+        <!-- Content grid -->
+        <section class="content-grid">
+            <!-- Messages Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">💬 Conversation Feed</div>
+                    <div class="actions-bar">
+                        <button class="action-btn refresh" onclick="refreshData()" title="Refresh">🔄 Refresh</button>
+                        <button class="action-btn" onclick="clearLog()" title="Clear log">🗑 Clear</button>
+                    </div>
+                </div>
+                <div class="panel-body" id="messagesFeed">
+                    <div class="empty-state">
+                        <div class="empty-icon">📱</div>
+                        <div class="empty-title">No messages yet</div>
+                        <div class="empty-desc">
+                            Send a WhatsApp message or use the Simulate tab to start a conversation with OpenClaw AI.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inquiry Breakdown Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">📊 Inquiry Breakdown</div>
+                </div>
+                <div class="breakdown-grid" id="breakdownGrid">
+                    <div class="empty-state">
+                        <div class="empty-icon">📈</div>
+                        <div class="empty-title">No data yet</div>
+                        <div class="empty-desc">Send some messages to see the inquiry type breakdown.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Message Detail Modal -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal" id="modalContent">
+            <div class="modal-header">
+                <div class="panel-title">📋 Message Detail</div>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-refresh interval
+        let refreshInterval;
+
+        async function fetchStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+
+                document.getElementById('statTotal').textContent = data.total_messages;
+                document.getElementById('statAvgRT').innerHTML =
+                    data.avg_response_time_ms + '<span style="font-size:1rem;font-weight:400;opacity:0.6">ms</span>';
+                document.getElementById('statWhatsApp').textContent = data.channels.whatsapp || 0;
+                document.getElementById('statSimulated').textContent = data.channels.web_simulate || 0;
+                document.getElementById('statEscalations').textContent = data.escalation_count;
+
+                renderBreakdown(data.inquiry_breakdown, data.total_messages);
+            } catch (e) {
+                console.error('Stats fetch error:', e);
+            }
+        }
+
+        async function fetchMessages() {
+            try {
+                const res = await fetch('/api/messages?limit=50');
+                const data = await res.json();
+                renderMessages(data.messages);
+            } catch (e) {
+                console.error('Messages fetch error:', e);
+            }
+        }
+
+        function renderMessages(messages) {
+            const feed = document.getElementById('messagesFeed');
+            if (!messages || messages.length === 0) {
+                feed.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📱</div>
+                        <div class="empty-title">No messages yet</div>
+                        <div class="empty-desc">
+                            Send a WhatsApp message or use the Simulate tab to start a conversation.
+                        </div>
+                    </div>`;
+                return;
+            }
+
+            feed.innerHTML = messages.map(msg => {
+                const time = new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                const channelClass = msg.channel || 'web_simulate';
+                const channelLabel = msg.channel === 'whatsapp' ? 'WhatsApp' : 'Simulate';
+                const inquiryClass = (msg.inquiry_type || 'general').replace(' ', '_');
+                const inquiryLabel = (msg.inquiry_type || 'general').replace('_', ' ');
+                const shortResponse = msg.response ? (msg.response.length > 120 ? msg.response.substring(0, 120) + '...' : msg.response) : '';
+
+                return `
+                <div class="message-item" onclick='showDetail(${JSON.stringify(msg).replace(/'/g, "&#39;")})'>
+                    <div class="message-meta">
+                        <span class="channel-badge ${channelClass}">${channelLabel}</span>
+                        <span class="inquiry-badge ${inquiryClass}">${inquiryLabel}</span>
+                        ${msg.action === 'route_to_human' ? '<span class="inquiry-badge escalate">⚠ ESCALATED</span>' : ''}
+                        <span class="message-time">${time}</span>
+                    </div>
+                    <div class="message-text">📩 ${escapeHtml(msg.message)}</div>
+                    ${shortResponse ? `<div class="message-response">🤖 ${escapeHtml(shortResponse)}</div>` : ''}
+                    ${msg.response_time_ms ? `<div class="response-time-tag">⚡ ${msg.response_time_ms}ms</div>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        function renderBreakdown(breakdown, total) {
+            const grid = document.getElementById('breakdownGrid');
+            if (!breakdown || Object.keys(breakdown).length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📈</div>
+                        <div class="empty-title">No data yet</div>
+                        <div class="empty-desc">Send some messages to see the inquiry breakdown.</div>
+                    </div>`;
+                return;
+            }
+
+            const colors = {
+                sizing: '#8b5cf6',
+                order_status: '#06b6d4',
+                return_request: '#f59e0b',
+                general: '#64748b',
+                escalate: '#ef4444',
+                error: '#ef4444',
+                unknown: '#475569',
+            };
+
+            const maxCount = Math.max(...Object.values(breakdown));
+
+            grid.innerHTML = Object.entries(breakdown)
+                .sort((a, b) => b[1] - a[1])
+                .map(([type, count]) => {
+                    const color = colors[type] || '#64748b';
+                    const pct = maxCount > 0 ? (count / maxCount * 100) : 0;
+                    const label = type.replace('_', ' ');
+
+                    return `
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">
+                            <span class="breakdown-dot" style="background:${color}"></span>
+                            ${label}
+                        </div>
+                        <div class="breakdown-bar-bg">
+                            <div class="breakdown-bar" style="width:${pct}%;background:${color}"></div>
+                        </div>
+                        <div class="breakdown-count">${count}</div>
+                    </div>`;
+                }).join('');
+        }
+
+        function showDetail(msg) {
+            const body = document.getElementById('modalBody');
+            const time = new Date(msg.timestamp).toLocaleString();
+            body.innerHTML = `
+                <div class="modal-section">
+                    <div class="modal-label">Timestamp</div>
+                    <div class="modal-content">${time}</div>
+                </div>
+                <div class="modal-section">
+                    <div class="modal-label">Channel / Phone</div>
+                    <div class="modal-content">${msg.channel} — ${msg.phone || 'N/A'}</div>
+                </div>
+                <div class="modal-section">
+                    <div class="modal-label">Inquiry Type</div>
+                    <div class="modal-content">${msg.inquiry_type || 'N/A'} ${msg.action === 'route_to_human' ? '⚠️ ESCALATED TO HUMAN' : ''}</div>
+                </div>
+                <div class="modal-section">
+                    <div class="modal-label">Customer Message</div>
+                    <div class="modal-content">${escapeHtml(msg.message)}</div>
+                </div>
+                <div class="modal-section">
+                    <div class="modal-label">AI Response</div>
+                    <div class="modal-content">${escapeHtml(msg.response || 'N/A')}</div>
+                </div>
+                <div class="modal-section">
+                    <div class="modal-label">Response Time</div>
+                    <div class="modal-content">${msg.response_time_ms ? msg.response_time_ms + 'ms' : 'N/A'}</div>
+                </div>
+            `;
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        function closeModal(event) {
+            if (event && event.target !== document.getElementById('modalOverlay')) return;
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        async function clearLog() {
+            if (!confirm('Clear all conversation history?')) return;
+            await fetch('/api/clear-log', { method: 'POST' });
+            refreshData();
+        }
+
+        function refreshData() {
+            fetchStats();
+            fetchMessages();
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initial load & auto-refresh
+        refreshData();
+        refreshInterval = setInterval(refreshData, 5000);
+
+        // Close modal on escape
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>

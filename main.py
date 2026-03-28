@@ -237,6 +237,19 @@ def main():
         if arg == "--offline":
             verify_tools_offline()
             return
+        elif arg == "--whatsapp":
+            # Start the WhatsApp webhook server + dashboard
+            from whatsapp_server import start_server
+            use_ngrok = "--no-ngrok" not in sys.argv
+            port = int(os.getenv("PORT", 5000))
+            start_server(port=port, use_ngrok=use_ngrok)
+            return
+        elif arg == "--simulate":
+            # Start server without ngrok (just the simulated UI)
+            from whatsapp_server import start_server
+            port = int(os.getenv("PORT", 5000))
+            start_server(port=port, use_ngrok=False)
+            return
         elif arg == "--demo":
             if not api_key or api_key == "your_groq_api_key_here" or api_key == "your_openrouter_api_key_here":
                 print("\n[ERROR] No API key configured")
@@ -265,7 +278,18 @@ def main():
             print("=" * 70)
             return
         elif arg == "--help":
-            print(__doc__)
+            print("""
+Retail AI Assistant -- OpenClaw
+CLI chatbot for Personal Shopping and Customer Support.
+
+Usage:
+    python main.py              # Start interactive chatbot
+    python main.py --demo       # Run all demo scenarios
+    python main.py --offline    # Offline tool verification (no API key)
+    python main.py --whatsapp   # Start WhatsApp server + dashboard (with ngrok)
+    python main.py --simulate   # Start simulated WhatsApp UI (no ngrok)
+    python main.py --help       # Show this help message
+""")
             return
     
     # Default behavior: Start Chatbot immediately

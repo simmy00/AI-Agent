@@ -150,9 +150,10 @@ DO NOT call tools for:
   - Generic questions without order ID
   - Just respond conversationally to these
 
-DO NOT assume or guess order IDs:
-  - If customer says "where is my order?" without an ID, ask them for it
-  - ONLY call get_order if you have the actual order ID
+DO NOT ASSUME OR GUESS ORDER IDs (CRITICAL RULE):
+  - If a user asks "where is my order?" or "can I return this?" BUT DOES NOT provide an Order ID (like O0005) in their message, YOU MUST ASK THEM FOR IT.
+  - DO NOT call `get_order` or `evaluate_return` with a random, guessed, or placeholder ID (e.g. do not guess '0001').
+  - ONLY use a tool if the user explicitly typed the ID in the chat!
 
 CRITICAL: "where is my order?" = ORDER STATUS = use get_order, NOT evaluate_return
 CRITICAL: "can I return my order?" = RETURN ELIGIBILITY = use evaluate_return
@@ -183,7 +184,7 @@ CRITICAL RULES:
 - MUST use native JSON tool calling. DO NOT output <function> or XML tags.
 - If a product or order doesn't exist, clearly state that
 - Be professional, clear, and helpful
-- NEVER guess or invent an order ID or product ID. If you don't have it, ask the user!
+- NEVER guess or invent an order ID or product ID. If you don't have it, ask the user! If a user simply says "Where is my order" YOU MUST ASK "What is your order ID?"
 - Product IDs use format P0001, P0002, etc.
 - Order IDs use format O0001, O0002, etc. (or just 0001, system accepts both formats)
 
@@ -215,6 +216,13 @@ Store policies:
             return {**result, "status": "success"}
         
         elif tool_name == "get_order":
+            if not tool_input.get('customer_provided_id', False):
+                return {
+                    "error": "HALLUCINATION_DETECTED",
+                    "message": "You tried to search for an order ID without the customer providing one. Stop and ask the customer for their order ID.",
+                    "status": "error"
+                }
+
             result = self.tools.get_order(tool_input['order_id'])
             if result is None:
                 return {
@@ -226,6 +234,13 @@ Store policies:
             return {**result, "status": "success"}
         
         elif tool_name == "evaluate_return":
+            if not tool_input.get('customer_provided_id', False):
+                return {
+                    "error": "HALLUCINATION_DETECTED",
+                    "message": "You tried to evaluate a return without the customer providing an order ID. Stop and ask the customer for their order ID.",
+                    "status": "error"
+                }
+
             result = self.tools.evaluate_return(tool_input['order_id'])
             # Check if order was not found
             if result.get('status') == 'not_found' or 'not found' in result.get('reason', '').lower():

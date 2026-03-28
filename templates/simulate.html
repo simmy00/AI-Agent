@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw — WhatsApp Simulator</title>
+    <meta name="description" content="Simulated WhatsApp chat interface for testing OpenClaw AI customer support responses">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --border-glass: rgba(255,255,255,0.08);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+
+            /* WhatsApp colors */
+            --wa-bg: #0b141a;
+            --wa-header: #1f2c34;
+            --wa-chat-bg: #0b141a;
+            --wa-sent: #005c4b;
+            --wa-sent-darker: #025144;
+            --wa-received: #1f2c34;
+            --wa-input-bg: #1f2c34;
+            --wa-green: #25d366;
+            --wa-green-light: #00a884;
+            --wa-text: #e9edef;
+            --wa-text-secondary: #8696a0;
+            --wa-time: rgba(255,255,255,0.45);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(37, 211, 102, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 14, 26, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-glass);
+            padding: 0 2rem;
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3);
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .logo-text span { color: var(--wa-green); }
+
+        .header-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            padding: 8px 18px;
+            border-radius: 10px;
+            border: 1px solid var(--border-glass);
+            background: rgba(255,255,255,0.03);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: var(--accent-blue); }
+        .nav-btn.active { background: rgba(37,211,102,0.1); border-color: rgba(37,211,102,0.3); color: var(--wa-green); }
+
+        /* Layout */
+        .page-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 900px) {
+            .page-layout { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+        }
+
+        /* WhatsApp Phone Container */
+        .phone-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .wa-phone {
+            width: 100%;
+            max-width: 480px;
+            height: 700px;
+            background: var(--wa-bg);
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(37,211,102,0.05);
+        }
+
+        /* WhatsApp Header */
+        .wa-header {
+            background: var(--wa-header);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .wa-back { color: var(--wa-green-light); font-size: 1.2rem; cursor: pointer; }
+
+        .wa-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .wa-contact-info {
+            flex: 1;
+        }
+
+        .wa-contact-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--wa-text);
+        }
+
+        .wa-contact-status {
+            font-size: 0.75rem;
+            color: var(--wa-text-secondary);
+        }
+
+        .wa-header-actions {
+            display: flex;
+            gap: 16px;
+            color: var(--wa-text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Chat area */
+        .wa-chat {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.1) transparent;
+
+            /* WhatsApp wallpaper pattern */
+            background-color: var(--wa-chat-bg);
+            background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Ccircle cx='20' cy='20' r='2'/%3E%3Ccircle cx='60' cy='60' r='2'/%3E%3Ccircle cx='60' cy='20' r='1'/%3E%3Ccircle cx='20' cy='60' r='1'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .wa-chat::-webkit-scrollbar { width: 6px; }
+        .wa-chat::-webkit-scrollbar-track { background: transparent; }
+        .wa-chat::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+        /* Message bubbles */
+        .wa-bubble-row {
+            display: flex;
+            margin-bottom: 2px;
+        }
+
+        .wa-bubble-row.sent { justify-content: flex-end; }
+        .wa-bubble-row.received { justify-content: flex-start; }
+
+        .wa-bubble {
+            max-width: 85%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            line-height: 1.45;
+            color: var(--wa-text);
+            position: relative;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .wa-bubble.sent {
+            background: var(--wa-sent);
+            border-top-right-radius: 2px;
+        }
+
+        .wa-bubble.received {
+            background: var(--wa-received);
+            border-top-left-radius: 2px;
+        }
+
+        .wa-bubble-time {
+            font-size: 0.65rem;
+            color: var(--wa-time);
+            text-align: right;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+        }
+
+        .wa-bubble-time .checkmarks { color: #53bdeb; }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 16px;
+        }
+
+        .typing-indicator.active { display: flex; }
+
+        .typing-dots {
+            display: flex;
+            gap: 3px;
+            background: var(--wa-received);
+            padding: 10px 14px;
+            border-radius: 8px;
+            border-top-left-radius: 2px;
+        }
+
+        .typing-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--wa-text-secondary);
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-4px); opacity: 1; }
+        }
+
+        /* Date separator */
+        .wa-date-separator {
+            text-align: center;
+            margin: 12px 0;
+        }
+
+        .wa-date-badge {
+            display: inline-block;
+            background: rgba(31, 44, 52, 0.9);
+            color: var(--wa-text-secondary);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 500;
+        }
+
+        /* System message */
+        .wa-system-msg {
+            text-align: center;
+            margin: 8px 0;
+        }
+
+        .wa-system-badge {
+            display: inline-block;
+            background: rgba(37, 211, 102, 0.1);
+            color: var(--wa-green-light);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            border: 1px solid rgba(37,211,102,0.15);
+        }
+
+        /* Input area */
+        .wa-input-area {
+            padding: 8px 12px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            background: var(--wa-header);
+        }
+
+        .wa-input-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            background: var(--wa-input-bg);
+            border-radius: 24px;
+            padding: 4px 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .wa-emoji-btn {
+            padding: 8px 4px;
+            color: var(--wa-text-secondary);
+            cursor: pointer;
+            font-size: 1.2rem;
+            border: none;
+            background: none;
+        }
+
+        #messageInput {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--wa-text);
+            font-family: inherit;
+            font-size: 0.9rem;
+            padding: 8px;
+            resize: none;
+            max-height: 100px;
+            min-height: 20px;
+        }
+
+        #messageInput::placeholder { color: var(--wa-text-secondary); }
+
+        .wa-send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--wa-green-light);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.15s ease, background 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .wa-send-btn:hover { transform: scale(1.05); background: var(--wa-green); }
+        .wa-send-btn:active { transform: scale(0.95); }
+        .wa-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Inquiry badge in bubble */
+        .bubble-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-bottom: 4px;
+        }
+
+        .bubble-badge.sizing { background: rgba(139,92,246,0.2); color: #a78bfa; }
+        .bubble-badge.order_status { background: rgba(6,182,212,0.2); color: #22d3ee; }
+        .bubble-badge.return_request { background: rgba(245,158,11,0.2); color: #fbbf24; }
+        .bubble-badge.general { background: rgba(100,116,139,0.2); color: #94a3b8; }
+        .bubble-badge.escalate { background: rgba(239,68,68,0.2); color: #f87171; }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .sidebar-card {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 1.25rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quick-btn {
+            display: block;
+            width: 100%;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            border: 1px solid var(--border-glass);
+            background: rgba(255,255,255,0.02);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .quick-btn:hover {
+            background: rgba(37,211,102,0.08);
+            border-color: rgba(37,211,102,0.2);
+            color: var(--wa-green);
+        }
+
+        .quick-btn:last-child { margin-bottom: 0; }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-glass);
+            font-size: 0.82rem;
+        }
+
+        .info-item:last-child { border-bottom: none; }
+        .info-label { color: var(--text-muted); }
+        .info-value { color: var(--text-primary); font-weight: 500; }
+
+        .response-time-display {
+            text-align: center;
+            padding: 12px;
+            background: rgba(16,185,129,0.06);
+            border: 1px solid rgba(16,185,129,0.1);
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+
+        .rt-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        .rt-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo">
+                <div class="logo-icon">📱</div>
+                <div class="logo-text">Open<span>Claw</span> WhatsApp</div>
+            </div>
+            <nav class="header-nav">
+                <a href="/dashboard" class="nav-btn">📊 Dashboard</a>
+                <a href="/simulate" class="nav-btn active">💬 Simulate</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Layout -->
+    <div class="page-layout">
+        <!-- WhatsApp Phone -->
+        <div class="phone-container">
+            <div class="wa-phone">
+                <!-- WA Header -->
+                <div class="wa-header">
+                    <span class="wa-back">←</span>
+                    <div class="wa-avatar">🐾</div>
+                    <div class="wa-contact-info">
+                        <div class="wa-contact-name">OpenClaw Support</div>
+                        <div class="wa-contact-status" id="waStatus">online</div>
+                    </div>
+                    <div class="wa-header-actions">
+                        <span>📞</span>
+                        <span>⋮</span>
+                    </div>
+                </div>
+
+                <!-- Chat Area -->
+                <div class="wa-chat" id="waChat">
+                    <!-- Date separator -->
+                    <div class="wa-date-separator">
+                        <span class="wa-date-badge">Today</span>
+                    </div>
+
+                    <!-- System message -->
+                    <div class="wa-system-msg">
+                        <span class="wa-system-badge">🔒 Messages are processed by OpenClaw AI</span>
+                    </div>
+
+                    <!-- Welcome message -->
+                    <div class="wa-bubble-row received">
+                        <div class="wa-bubble received">
+                            👋 Welcome to <b>OpenClaw</b>! I'm your AI shopping assistant.
+
+I can help you with:
+📏 <b>Sizing questions</b> — find the right fit
+📦 <b>Order status</b> — track your delivery
+🔄 <b>Returns & exchanges</b> — check eligibility
+💬 <b>General questions</b> — product info & more
+
+How can I help you today?
+                            <div class="wa-bubble-time">
+                                <span id="welcomeTime"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Typing indicator -->
+                <div class="typing-indicator" id="typingIndicator">
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="wa-input-area">
+                    <div class="wa-input-wrapper">
+                        <button class="wa-emoji-btn">😊</button>
+                        <textarea id="messageInput" placeholder="Type a message" rows="1"></textarea>
+                    </div>
+                    <button class="wa-send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Quick Messages -->
+            <div class="sidebar-card">
+                <div class="sidebar-title">⚡ Quick Messages</div>
+                <button class="quick-btn" onclick="quickSend('What size should I order? I usually wear a medium.')">📏 Ask about sizing</button>
+                <button class="quick-btn" onclick="quickSend('Where is my order O0005?')">📦 Check order status</button>
+                <button class="quick-btn" onclick="quickSend('I want to return order O0001. The dress does not fit.')">🔄 Request a return</button>
+                <button class="quick-btn" onclick="quickSend('What are your most popular items under $200?')">🛍️ Browse products</button>
+                <button class="quick-btn" onclick="quickSend('I need a formal evening gown in size 10 under $300')">👗 Personal shopper</button>
+                <button class="quick-btn" onclick="quickSend('I am very disappointed. I want to speak to a manager!')">⚠️ Test escalation</button>
+            </div>
+
+            <!-- Session Info -->
+            <div class="sidebar-card">
+                <div class="sidebar-title">📊 Session Info</div>
+                <div class="info-item">
+                    <span class="info-label">Messages sent</span>
+                    <span class="info-value" id="msgCount">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Channel</span>
+                    <span class="info-value">Web Simulate</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">AI Model</span>
+                    <span class="info-value">Llama 3.3 70B</span>
+                </div>
+                <div class="response-time-display">
+                    <div class="rt-value" id="lastRT">—</div>
+                    <div class="rt-label">Last response time</div>
+                </div>
+            </div>
+
+            <!-- Help -->
+            <div class="sidebar-card">
+                <div class="sidebar-title">💡 Tips</div>
+                <div style="font-size:0.78rem;color:var(--text-muted);line-height:1.6;">
+                    • Use order IDs like <b>O0001</b> to <b>O0100</b><br>
+                    • Ask about specific products by name<br>
+                    • Try complex queries — the AI handles multi-constraint searches<br>
+                    • Angry messages trigger human escalation
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chat = document.getElementById('waChat');
+        const input = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const typingIndicator = document.getElementById('typingIndicator');
+        let messageCount = 0;
+        let isProcessing = false;
+
+        // Auto-resize textarea
+        input.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+        });
+
+        // Enter to send (Shift+Enter for newline)
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function getTime() {
+            return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function addBubble(text, type = 'sent', badge = null, responseTime = null) {
+            const row = document.createElement('div');
+            row.className = `wa-bubble-row ${type}`;
+
+            let badgeHtml = '';
+            if (badge && type === 'received') {
+                const badgeClass = badge.replace(' ', '_');
+                badgeHtml = `<div><span class="bubble-badge ${badgeClass}">${badge.replace('_', ' ')}</span></div>`;
+            }
+
+            let rtHtml = '';
+            if (responseTime && type === 'received') {
+                rtHtml = ` · ⚡${responseTime}ms`;
+            }
+
+            row.innerHTML = `
+                <div class="wa-bubble ${type}">
+                    ${badgeHtml}
+                    ${escapeHtml(text)}
+                    <div class="wa-bubble-time">
+                        ${getTime()}${type === 'sent' ? ' <span class="checkmarks">✓✓</span>' : ''}${rtHtml}
+                    </div>
+                </div>
+            `;
+
+            chat.appendChild(row);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function showTyping(show) {
+            typingIndicator.classList.toggle('active', show);
+            document.getElementById('waStatus').textContent = show ? 'typing...' : 'online';
+            if (show) chat.scrollTop = chat.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const text = input.value.trim();
+            if (!text || isProcessing) return;
+
+            isProcessing = true;
+            sendBtn.disabled = true;
+
+            // Add user bubble
+            addBubble(text, 'sent');
+            input.value = '';
+            input.style.height = 'auto';
+            messageCount++;
+            document.getElementById('msgCount').textContent = messageCount;
+
+            // Show typing
+            showTyping(true);
+
+            try {
+                const res = await fetch('/api/send-simulated', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text }),
+                });
+
+                const data = await res.json();
+                showTyping(false);
+
+                if (data.error) {
+                    addBubble('⚠️ ' + data.error, 'received');
+                } else {
+                    addBubble(data.response, 'received', data.inquiry_type, data.response_time_ms);
+                    document.getElementById('lastRT').textContent = data.response_time_ms + 'ms';
+
+                    // Show escalation alert
+                    if (data.action === 'route_to_human') {
+                        const sysMsg = document.createElement('div');
+                        sysMsg.className = 'wa-system-msg';
+                        sysMsg.innerHTML = '<span class="wa-system-badge" style="background:rgba(239,68,68,0.1);color:#f87171;border-color:rgba(239,68,68,0.15)">⚠️ This conversation has been escalated to a human agent</span>';
+                        chat.appendChild(sysMsg);
+                        chat.scrollTop = chat.scrollHeight;
+                    }
+                }
+            } catch (e) {
+                showTyping(false);
+                addBubble('⚠️ Could not connect to the AI server. Is it running?', 'received');
+            }
+
+            isProcessing = false;
+            sendBtn.disabled = false;
+            input.focus();
+        }
+
+        function quickSend(text) {
+            input.value = text;
+            sendMessage();
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Set welcome message time
+        document.getElementById('welcomeTime').textContent =
+            new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+        // Focus input on load
+        input.focus();
+    </script>
+</body>
+</html>

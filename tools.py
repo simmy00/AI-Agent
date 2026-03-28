@@ -434,9 +434,13 @@ TOOL_DEFINITIONS = [
                 "order_id": {
                     "type": "string",
                     "description": "The unique order identifier (format: O0001, O0002, etc.)"
+                },
+                "customer_provided_id": {
+                    "type": "boolean",
+                    "description": "CRITICAL: Set to true ONLY IF the customer explicitly typed this order ID in their original message. Set to false if you are guessing, assuming, or didn't receive it."
                 }
             },
-            "required": ["order_id"]
+            "required": ["order_id", "customer_provided_id"]
         }
     },
     {
@@ -448,9 +452,13 @@ TOOL_DEFINITIONS = [
                 "order_id": {
                     "type": "string",
                     "description": "The order ID to evaluate for return eligibility (format: O0001, O0002, etc.)"
+                },
+                "customer_provided_id": {
+                    "type": "boolean",
+                    "description": "CRITICAL: Set to true ONLY IF the customer explicitly typed this order ID in their original message. Set to false if you are guessing, assuming, or didn't receive it."
                 }
             },
-            "required": ["order_id"]
+            "required": ["order_id", "customer_provided_id"]
         }
     }
 ]
