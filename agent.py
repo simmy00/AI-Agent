@@ -191,8 +191,8 @@ CRITICAL RULES:
 Store policies:
 """ + tools.policy_text
 
-    def process_tool_call(self, tool_name: str, tool_input: Dict) -> Any:
-        """Execute a tool call and return results"""
+    def process_tool_call(self, tool_name: str, tool_input: Dict, messages: list = None) -> Any:
+        """Execute a tool call and return results. Messages are passed for cross-validation."""
         if tool_name == "search_products":
             result = self.tools.search_products(tool_input.get('filters', {}))
             if not result:
@@ -222,6 +222,15 @@ Store policies:
                     "message": "You tried to search for an order ID without the customer providing one. Stop and ask the customer for their order ID.",
                     "status": "error"
                 }
+            
+            # Cross-check: verify the order ID actually appears in the user's messages
+            order_id_to_check = tool_input.get('order_id', '')
+            if not self._verify_id_in_messages(messages, order_id_to_check):
+                return {
+                    "error": "HALLUCINATION_DETECTED",
+                    "message": f"The order ID '{order_id_to_check}' was NOT found in the customer's messages. You are hallucinating. Stop and ask the customer for their order ID.",
+                    "status": "error"
+                }
 
             result = self.tools.get_order(tool_input['order_id'])
             if result is None:
@@ -240,6 +249,15 @@ Store policies:
                     "message": "You tried to evaluate a return without the customer providing an order ID. Stop and ask the customer for their order ID.",
                     "status": "error"
                 }
+            
+            # Cross-check: verify the order ID actually appears in the user's messages
+            order_id_to_check = tool_input.get('order_id', '')
+            if not self._verify_id_in_messages(messages, order_id_to_check):
+                return {
+                    "error": "HALLUCINATION_DETECTED",
+                    "message": f"The order ID '{order_id_to_check}' was NOT found in the customer's messages. You are hallucinating. Stop and ask the customer for their order ID.",
+                    "status": "error"
+                }
 
             result = self.tools.evaluate_return(tool_input['order_id'])
             # Check if order was not found
@@ -256,6 +274,29 @@ Store policies:
                 "message": f"Unknown tool: {tool_name}",
                 "status": "error"
             }
+    
+    @staticmethod
+    def _verify_id_in_messages(messages, order_id: str) -> bool:
+        """
+        Verify that the given order ID (or its numeric part) actually appears
+        in at least one user message. This prevents the LLM from lying about
+        customer_provided_id=true when it's hallucinating an ID.
+        """
+        import re
+        # Normalize: extract the numeric part (e.g., "O0006" -> "0006")
+        numeric_part = re.sub(r'[^0-9]', '', order_id)
+        if not numeric_part:
+            return False
+        
+        for msg in messages:
+            if msg.get('role') in ('user',) or (isinstance(msg, dict) and msg.get('role') == 'user'):
+                content = msg.get('content', '') if isinstance(msg, dict) else ''
+                if not content:
+                    continue
+                # Check if the numeric part or full ID appears in the user message
+                if numeric_part in content or order_id in content:
+                    return True
+        return False
     
     def _call_llm_with_retry(self, messages, max_retries=3):
         """Call LLM API (Groq or OpenRouter) with automatic retry on rate limit errors"""
@@ -293,11 +334,17 @@ Store policies:
         
         raise Exception("API rate limit exceeded after retries. Please wait a minute and try again.")
     
-    def chat(self, user_message: str, mode: str = "unified") -> str:
+    def chat(self, user_message: str, mode: str = "unified", conversation_history: list = None) -> str:
         """
         Process a user message and return AI response.
         Uses an agentic loop that handles tool calls via Groq native function calling.
         Includes safeguards against hallucination and proper error handling.
+        
+        Args:
+            user_message: The current user message
+            mode: The operating mode (unified, personal_shopper, support)
+            conversation_history: Optional list of previous {role, content} dicts
+                                  representing earlier turns in this conversation
         """
         # Select system prompt
         if mode == "personal_shopper":
@@ -309,8 +356,13 @@ Store policies:
         
         messages = [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_message}
         ]
+        
+        # Inject conversation history so the LLM has context for follow-ups
+        if conversation_history:
+            messages.extend(conversation_history)
+        
+        messages.append({"role": "user", "content": user_message})
         
         # Agentic loop -- keeps going until model returns text (not tool calls)
         max_iterations = 10
@@ -336,10 +388,10 @@ Store policies:
                     except json.JSONDecodeError:
                         function_args = {}
                         
-                    tool_result = self.process_tool_call(function_name, function_args)
+                    tool_result = self.process_tool_call(function_name, function_args, messages)
                     
-                    # Check for data not found errors
-                    if tool_result.get('error') == 'NOT_FOUND' or tool_result.get('status') == 'not_found':
+                    # Check for data not found errors or hallucination guards
+                    if tool_result.get('error') in ('NOT_FOUND', 'HALLUCINATION_DETECTED') or tool_result.get('status') in ('not_found', 'error'):
                         has_data_error = True
                     
                     messages.append({
@@ -371,7 +423,10 @@ Store policies:
             for msg in reversed(messages):
                 if msg.get('role') == 'tool':
                     content = msg.get('content', '')
-                    if 'order' in content.lower() and 'not found' in content.lower():
+                    # Handle the HALLUCINATION_DETECTED case — LLM guessed an order ID
+                    if 'hallucination_detected' in content.lower():
+                        return "I'd be happy to help! Could you please provide your order ID? It typically looks like 'O0001' or just '0001'."
+                    elif 'order' in content.lower() and 'not found' in content.lower():
                         return f"I couldn't find that order in our system. Could you please double-check the order ID and try again? Order IDs typically look like 'O0001' or just '0001'."
                     elif 'product' in content.lower() and 'not found' in content.lower():
                         return "That product doesn't appear to be in our inventory. Would you like me to search for similar items instead?"
@@ -427,8 +482,10 @@ class OpenClawChatbot:
             'escalate', 'not satisfied', 'disappointed', 'angry',
             'terrible', 'worst', 'sue', 'lawyer', 'legal'
         ]
-        # Track conversation state per channel/conversation
-        self.conversation_state = {}  # session_id -> {'last_order_id': '0001', 'conversation_topic': 'return', etc}
+        # Track conversation state per user session
+        # session_id -> {'last_order_id': '0001', 'history': [...], 'last_inquiry_type': 'order_status'}
+        self.conversation_state = {}
+        self.max_history_turns = 5  # Keep last 5 turns (10 messages) per user
     
     def _extract_order_id(self, message: str) -> Optional[str]:
         """Extract order ID from message (handles formats like 0001, O0001, order 0001, etc.)"""
@@ -446,10 +503,21 @@ class OpenClawChatbot:
                 return order_num
         return None
     
+    def _is_bare_followup(self, message: str) -> bool:
+        """Check if the message is a bare follow-up (just a number, short ID, etc.)"""
+        stripped = message.strip()
+        # It's a bare follow-up if it's just digits, or very short with digits
+        if stripped.isdigit() and len(stripped) <= 6:
+            return True
+        # Matches patterns like "O0006", "o0006"
+        if len(stripped) <= 6 and stripped[0].upper() == 'O' and stripped[1:].isdigit():
+            return True
+        return False
+    
     def _get_session_id(self, channel: str, user_id: Optional[str] = None) -> str:
         """Get or create a session ID for conversation history"""
-        # In a real system, this would use actual user/session IDs
-        # For now, use channel as a simple session identifier
+        if user_id:
+            return f"{channel}:{user_id}"
         return channel
     
     def classify_inquiry(self, message: str) -> str:
@@ -472,9 +540,21 @@ class OpenClawChatbot:
         
         # Initialize or get conversation state
         if session_id not in self.conversation_state:
-            self.conversation_state[session_id] = {'last_order_id': None}
+            self.conversation_state[session_id] = {
+                'last_order_id': None,
+                'history': [],           # List of {role, content} dicts
+                'last_inquiry_type': None,
+                'last_active': time.time()
+            }
         
         state = self.conversation_state[session_id]
+        
+        # Reset session if inactive for 30 minutes
+        if time.time() - state.get('last_active', 0) > 1800:
+            state['history'] = []
+            state['last_order_id'] = None
+            state['last_inquiry_type'] = None
+        state['last_active'] = time.time()
         
         # Extract order ID from current message
         current_order_id = self._extract_order_id(message)
@@ -483,6 +563,11 @@ class OpenClawChatbot:
         
         # Classify the inquiry
         inquiry_type = self.classify_inquiry(message)
+        
+        # If the message is a bare follow-up (just a number like "0006"),
+        # re-classify based on the last inquiry type
+        if self._is_bare_followup(message) and state.get('last_inquiry_type'):
+            inquiry_type = state['last_inquiry_type']
         
         if inquiry_type == "escalate":
             return {
@@ -494,19 +579,58 @@ class OpenClawChatbot:
                 "channel": channel
             }
         
+        # Build the enhanced message with context hints
+        enhanced_message = message
+        
         # If it's a return/exchange request and no order ID in current message,
         # use the last known order ID from conversation history
-        enhanced_message = message
         if inquiry_type in ["return_request"] and not current_order_id and state['last_order_id']:
             enhanced_message = f"{message} (order {state['last_order_id']})"
         
-        # If it's an order status inquiry with order ID, add explicit instruction
-        if inquiry_type == "order_status" and (current_order_id or state['last_order_id']):
-            order_id = current_order_id or state['last_order_id']
-            enhanced_message = f"{message}\n[INSTRUCTION: This is an order STATUS query. Call get_order with order_id={order_id}. Do NOT call evaluate_return.]"
+        # If it's an order status inquiry with an order ID IN THE CURRENT MESSAGE, add explicit instruction
+        # IMPORTANT: Only inject order_id when the user explicitly provides it NOW, not from stored history
+        if inquiry_type == "order_status" and current_order_id:
+            enhanced_message = f"{message}\n[INSTRUCTION: This is an order STATUS query. Call get_order with order_id={current_order_id} and customer_provided_id=true. Do NOT call evaluate_return.]"
+        
+        # If user sends a bare number and we have a previous context, hint the LLM
+        if self._is_bare_followup(message) and current_order_id and state.get('last_inquiry_type') == 'order_status':
+            enhanced_message = f"My order ID is {current_order_id}\n[INSTRUCTION: The customer previously asked about their order and is now providing the order ID. Call get_order with order_id={current_order_id} and customer_provided_id=true.]"
+        
+        # Short-circuit: if asking about order/return but no order ID is available,
+        # respond immediately asking for the ID instead of risking LLM hallucination
+        if inquiry_type == "order_status" and not current_order_id:
+            ask_response = "I'd be happy to help you with your order! Could you please provide your order ID? It usually looks like 'O0001' or just '0001'."
+            state['history'].append({"role": "user", "content": message})
+            state['history'].append({"role": "assistant", "content": ask_response})
+            state['last_inquiry_type'] = 'order_status'
+            return {
+                "response": ask_response,
+                "action": "automated_response",
+                "inquiry_type": inquiry_type,
+                "channel": channel
+            }
+        
+        if inquiry_type == "return_request" and not current_order_id and not state['last_order_id']:
+            ask_response = "I'd be happy to help you with a return! Could you please provide your order ID? It usually looks like 'O0001' or just '0001'."
+            state['history'].append({"role": "user", "content": message})
+            state['history'].append({"role": "assistant", "content": ask_response})
+            state['last_inquiry_type'] = 'return_request'
+            return {
+                "response": ask_response,
+                "action": "automated_response",
+                "inquiry_type": inquiry_type,
+                "channel": channel
+            }
+        
+        # Build conversation history for context
+        conversation_history = list(state.get('history', []))  # copy
         
         try:
-            response = self.agent.chat(enhanced_message, mode="unified")
+            response = self.agent.chat(
+                enhanced_message, 
+                mode="unified",
+                conversation_history=conversation_history
+            )
             
             # Validate response (fallback for potential hallucination)
             if not response or response.startswith("I'm sorry") or response.startswith("I apologize"):
@@ -514,12 +638,21 @@ class OpenClawChatbot:
                 if inquiry_type in ["order_status", "return_request"] and (current_order_id or state['last_order_id']):
                     fallback_msg = f"I couldn't retrieve information for order {current_order_id or state['last_order_id']}. "
                     fallback_msg += "Please verify the order ID is correct and try again, or contact our support team."
-                    return {
-                        "response": fallback_msg,
-                        "action": "fallback_response",
-                        "inquiry_type": inquiry_type,
-                        "channel": channel
-                    }
+                    response = fallback_msg
+                    # Still save to history
+            
+            # Save this turn to conversation history
+            state['history'].append({"role": "user", "content": message})
+            state['history'].append({"role": "assistant", "content": response})
+            
+            # Keep only last N turns (each turn = 2 messages)
+            max_messages = self.max_history_turns * 2
+            if len(state['history']) > max_messages:
+                state['history'] = state['history'][-max_messages:]
+            
+            # Track the inquiry type for follow-up context
+            if inquiry_type != 'general':
+                state['last_inquiry_type'] = inquiry_type
             
             return {
                 "response": response,
